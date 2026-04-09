@@ -2,6 +2,7 @@ package microservices.book.multiplication.challenge;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import microservices.book.multiplication.serviceclients.GamificationServiceClient;
 import microservices.book.multiplication.user.Users;
 import microservices.book.multiplication.user.UsersRepository;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // Data fields
     private final UsersRepository userRepository;
     private final ChallengeAttemptRepository attemptRepository;
+    private final GamificationServiceClient gameClient;
 
     @Override
     public ChallengeAttempt verifyAttempt(ChallengeAttemptDTO attemptDTO) {
@@ -28,7 +30,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         // Check if the attempt is correct.
         boolean isCorrect = attemptDTO.getGuess() == attemptDTO.getFactorA() * attemptDTO.getFactorB();
 
-        // Builds the domain object. Null Id for now.
+        // Builds the domain object. Null ID for now.
         ChallengeAttempt checkedAttempt =
                 new ChallengeAttempt(null,
                         user,
@@ -40,6 +42,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         // Stores the attempt
         ChallengeAttempt storedAttempt = attemptRepository.save(checkedAttempt);
 
+        // Sends the attempt to gamification and prints the response.
+        boolean status = gameClient.sendAttempt(storedAttempt);
+        log.info("Gamification service response: {}", status);
         return storedAttempt;
     }
 

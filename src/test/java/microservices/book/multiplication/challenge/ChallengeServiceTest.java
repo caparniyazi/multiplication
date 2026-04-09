@@ -1,5 +1,6 @@
 package microservices.book.multiplication.challenge;
 
+import microservices.book.multiplication.serviceclients.GamificationServiceClient;
 import microservices.book.multiplication.user.Users;
 import microservices.book.multiplication.user.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
 public class ChallengeServiceTest {
     // Data fields
     private ChallengeService challengeService;
@@ -24,13 +26,16 @@ public class ChallengeServiceTest {
     @Mock
     private ChallengeAttemptRepository attemptRepository;
 
+    @Mock
+    private GamificationServiceClient gameClient;
+
     @BeforeEach
     public void setUp() {
         challengeService = new ChallengeServiceImpl(
                 usersRepository,
-                attemptRepository);
+                attemptRepository,
+                gameClient);
     }
-
 
     @Test
     public void checkCorrectAttempts() {
